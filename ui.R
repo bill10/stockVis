@@ -1,19 +1,15 @@
 library(shiny)
+library(dygraphs)
 
 shinyUI(fluidPage(
-    titlePanel("stockVis"),
+    titlePanel("Stock Vis"),
     
     sidebarLayout(
         sidebarPanel(
-            helpText("Select a stock to examine. 
-                     Information will be collected from yahoo finance."),
+            helpText("Type a stock to examine. 
+                     Information will be downloaded from server."),
             
-            textInput("symb", "Symbol", "SPY"),
-            
-            dateRangeInput("dates",
-                           "Date range",
-                           start = "2013-01-01",
-                           end = as.character(Sys.Date())),
+            textInput("symb", "Symbol", ""),
             
             br(),
             br(),
