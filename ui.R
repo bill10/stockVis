@@ -10,17 +10,15 @@ shinyUI(fluidPage(
                      Information will be downloaded from server."),
             
             textInput("symb", "Symbol", ""),
+            helpText("After plot is loaded, drag to zoom in and double click to reset."),
+            br()
             
-            br(),
-            br(),
+            #checkboxInput("log", "Plot y axis on log scale", value = FALSE),
             
-            checkboxInput("log", "Plot y axis on log scale",
-                          value = FALSE),
-            
-            checkboxInput("adjust",
-                          "Adjust prices for inflation", value = FALSE)
+            #checkboxInput("adjust", "Adjust prices for inflation", value = FALSE)
             ),
         
-        mainPanel(dygraphOutput("plot"))
+        mainPanel(dygraphOutput("plot"), textOutput("statusIndicator"))
+        
     )
 ))
