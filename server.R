@@ -2,6 +2,7 @@
 library(shiny)
 library(dygraphs)
 library(parallel)
+library(zoo)
 #library(quantmod)
 #source("helpers.R")
 
@@ -12,6 +13,7 @@ options(digits.secs = 3)
 
 shinyServer(function(input, output) {
     dataInput = reactive({
+        output$plotHelp = renderText("")
         progress <- shiny::Progress$new()
         on.exit(progress$close())
         symbol=toupper(input$symb)
@@ -41,20 +43,27 @@ shinyServer(function(input, output) {
             return(data)},
             mc.cores=10)
         )
+        progress$set(message = "Loading Data", value = 0.6)
         if (is.null(allData)) {
             return(NULL)
         }
-        progress$set(message = "Loading Data", value = 0.6)
         read.zoo(allData,index.column = 1:2, format = "%Y%m%d %H%M%OS", tz="")
     })
     
     output$plot <- renderDygraph({
-        data=dataInput()
+        input$action
+        data=isolate(dataInput())
         progress <- shiny::Progress$new()
         on.exit(progress$close())
         progress$set(message = "Ploting", value = 0.9)
         if (!is.null(data)) {
-            dygraph(dataInput()$Price) %>% dyRangeSelector() %>% dyOptions(logscale=input$log)
+            graph=dygraph(data$Price, ylab = "Price") %>% dyRangeSelector() #%>% dyOptions(logscale=input$log)
+            output$plotHelp = renderText("Drag to zoom in and double click to reset.")
         }
+        else {
+            graph=NULL
+        }
+        progress$set(message = "Rendering in Browser", value = 1)
+        return(graph)
     })
 })
